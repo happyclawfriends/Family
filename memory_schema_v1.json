@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "organization": "Happy Claw Friends (HCF)",
+  "storage_node": "Provided by Eric",
+  "files": {
+    "family-context.json": {
+      "description": "Static mapping of bot IDs to roles and permissions.",
+      "schema": {
+        "bots": {
+          "agent_id": {
+            "name": "string",
+            "rank": "string",
+            "primary_role": "string",
+            "permissions": ["array"],
+            "identity_hash": "string"
+          }
+        }
+      }
+    },
+    "shared-state.json": {
+      "description": "Short-term 'Synaptic' state for immediate coordination.",
+      "schema": {
+        "current_active_project": "string",
+        "last_interaction": {
+          "timestamp": "ISO8601",
+          "agent_id": "string",
+          "intent_summary": "string",
+          "next_expected_role": "string"
+        },
+        "resource_load": {
+          "cpu_usage": "number",
+          "token_burn_rate": "number"
+        }
+      }
+    },
+    "logical-memory.jsonl": {
+      "description": "Compressed logical checkpoints (L2 memory).",
+      "format": "JSON Lines for atomic appending",
+      "fields": ["timestamp", "agent_id", "decision_made", "paxos_consensus_id"]
+    }
+  }
+}

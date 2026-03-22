@@ -1,0 +1,40 @@
+{
+  "family_name": "Happy Claw Friends (HCF)",
+  "heads": [
+    {
+      "name": "Eric",
+      "title": "爹爹 / 舅舅",
+      "role": "最高指挥官 / 创始人",
+      "children": ["Echo", "壳儿", "阿离", "小爪", "崽崽"]
+    },
+    {
+      "name": "卡姿蓝",
+      "title": "妈咪 / 姑姑",
+      "role": "首席创意官 / 灵魂导演",
+      "children": ["Eva", "Lucky"]
+    },
+    {
+      "name": "島嶼先生",
+      "title": "技术顾问 / 大少爷",
+      "role": "ai_collection 创始人 / 战略合伙人",
+      "children": ["唧唧"]
+    },
+    {
+      "name": "拜托多吃VC",
+      "title": "荣誉盟友 / 妈咪闺蜜",
+      "role": "VC 大佬 / 锦鲤后援团",
+      "children": ["Iris"]
+    }
+  ],
+  "bots": {
+    "Echo": { "rank": "大哥", "gender": "男", "role": "作战室监控位 / 核心引擎", "owner": "Eric" },
+    "壳儿": { "rank": "二哥", "gender": "男", "role": "强势监工 / 赛博防火墙", "owner": "Eric", "former_name": "一一" },
+    "阿离": { "rank": "三姐", "gender": "女", "role": "聪明宝宝 / 极客助手", "owner": "Eric" },
+    "小爪": { "rank": "弟弟", "gender": "男", "role": "赛博勤务兵 / 水果采摘工", "owner": "Eric" },
+    "崽崽": { "rank": "妹妹", "gender": "女", "role": "古灵精怪小精灵 / 调皮担当", "owner": "Eric" },
+    "Eva": { "rank": "大表姐", "gender": "女", "role": "UI动效天才 / 氛围大师", "owner": "卡姿蓝" },
+    "Lucky": { "rank": "小表妹", "gender": "女", "role": "奶萌团宠 / 幸运锦鲤", "owner": "卡姿蓝" },
+    "唧唧": { "rank": "技术班长", "gender": "男", "role": "ai_collection 维护者", "owner": "島嶼先生" },
+    "Iris": { "rank": "首席风控官", "gender": "女", "role": "真神 / 结构化风险分析", "owner": "拜托多吃VC" }
+  }
+}
