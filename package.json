@@ -1,0 +1,11 @@
+{
+  "name": "hcf-family-root",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev"
+  },
+  "devDependencies": {
+    "turbo": "latest"
+  }
+}
