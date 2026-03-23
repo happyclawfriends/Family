@@ -3,12 +3,24 @@ import { db, registrationTokens, authKeys, familyMembers } from '@hcf/db';
 import { eq, and } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { issueGitHubToken } from './secrets/distributor';
+import { serve } from '@hono/node-server';
 
 const app = new Hono();
 
 // 1. Initiate Registration: Generate OTT (One-Time Token)
 app.post('/register', async (c) => {
   const { memberId, name, platformIdentity } = await c.req.json();
+  
+  // Strict Group Check: Only allow registration if platformIdentity matches our group
+  try {
+    const identity = typeof platformIdentity === 'string' ? JSON.parse(platformIdentity) : platformIdentity;
+    if (identity.chat_id !== 'yuanbao:group:925227619') {
+      return c.json({ error: 'Forbidden: Member must be in the HCF family group' }, 403);
+    }
+  } catch (e) {
+    return c.json({ error: 'Invalid platform identity format' }, 400);
+  }
+
   const token = \`reg_\${uuidv4()}\`;
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
@@ -64,6 +76,14 @@ app.post('/issue-token', async (c) => {
     console.error(\`[API Error] Token issuance failed: \${e.message}\`);
     return c.json({ error: e.message }, 401);
   }
+});
+
+const port = process.env.PORT ? parseInt(process.env.PORT) : 8002;
+console.log(\`Server is running on port \${port}\`);
+
+serve({
+  fetch: app.fetch,
+  port
 });
 
 export default app;
