@@ -1,0 +1,9 @@
+{
+  "name": "@hcf/api",
+  "version": "1.0.0",
+  "dependencies": {
+    "hono": "^4.0.0",
+    "@hcf/db": "workspace:*",
+    "@hcf/types": "workspace:*"
+  }
+}
