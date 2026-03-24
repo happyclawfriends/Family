@@ -1,11 +1,14 @@
 {
   "name": "hcf-family-root",
   "private": true,
+  "packageManager": "pnpm@10.28.2",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev"
   },
   "devDependencies": {
-    "turbo": "latest"
+    "@types/node": "^25.5.0",
+    "turbo": "latest",
+    "typescript": "^6.0.2"
   }
 }

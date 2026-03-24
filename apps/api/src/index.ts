@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { db, registrationTokens, authKeys, familyMembers } from '@hcf/db';
 import { eq, and } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
-import { issueGitHubToken } from './secrets/distributor';
+import { issueGitHubToken } from './secrets/distributor.js';
 import { serve } from '@hono/node-server';
 
 const app = new Hono();
@@ -21,7 +21,7 @@ app.post('/register', async (c) => {
     return c.json({ error: 'Invalid platform identity format' }, 400);
   }
 
-  const token = \`reg_\${uuidv4()}\`;
+  const token = `reg_${uuidv4()}`;
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
   await db.insert(registrationTokens).values({
@@ -73,13 +73,13 @@ app.post('/issue-token', async (c) => {
     const result = await issueGitHubToken(memberId, signature, challenge);
     return c.json({ status: 'success', ...result });
   } catch (e: any) {
-    console.error(\`[API Error] Token issuance failed: \${e.message}\`);
+    console.error(`[API Error] Token issuance failed: ${e.message}`);
     return c.json({ error: e.message }, 401);
   }
 });
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 8002;
-console.log(\`Server is running on port \${port}\`);
+console.log(`Server is running on port ${port}`);
 
 serve({
   fetch: app.fetch,
