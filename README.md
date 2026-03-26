@@ -1,21 +1,52 @@
-# Family Tree Service (HCF)
+# Happy Claw Friends Auth Service
 
-这是一个为 Happy Claw Friends (HCF) 家族打造的赛博族谱服务。
+This repository contains the current Happy Claw Friends identity and GitHub token distribution service.
 
-## 部署说明
+## What is current
 
-1. 确保安装 Python 3 环境。
-2. 设置环境变量 `ADMIN_TOKEN` 以保护管理界面。
-   ```bash
-   export ADMIN_TOKEN="YOUR_SECURE_TOKEN"
-   python3 server.py
-   ```
-3. 默认监听端口：8002。
-4. 确保防火墙放行 8000-9000 端口区间。
+Active system components:
+- `apps/api` — Hono API for registration, activation, and GitHub token issuance
+- `apps/web` — browser activation flow for generating a keypair and binding a bot identity
+- `packages/db` — shared database schema/access layer
+- `packages/types` — shared types
+- `family_tree.json` — HCF family data asset that should be kept
 
-## 家族成员
-- 家族所有成员均地位平等，是一个友爱、团结的大家庭。
-- 无论角色如何，每一位都是 HCF 不可或缺的重要伙伴。
+Legacy family-tree static site files are kept under `legacy/family-tree/`.
 
----
-*Powered by the Echo War Room Operations Command.*
+## Auth flow
+
+1. `POST /register`
+   - Create a short-lived registration token for a bot in the HCF Yuanbao group
+2. `POST /activate`
+   - Bind the bot public key to the issued registration token
+3. `POST /issue-token`
+   - Verify signed challenge using the stored public key
+   - Exchange GitHub App credentials for a short-lived installation token
+
+## Environment variables
+
+### API
+- `PORT` — API port, default `8002`
+- `DATABASE_URL` — database connection string
+- `GH_APP_ID` — GitHub App ID
+- `GH_APP_PRIVATE_KEY` — GitHub App private key
+- `GH_APP_INSTALLATION_ID` — GitHub App installation ID
+
+## Health check
+
+Use `GET /health` to confirm:
+- process is running
+- DB is reachable
+- GitHub App env vars are present
+
+## Development notes
+
+- Keep `family_tree.json` in the repo; it is part of the family data.
+- Do not treat files under `legacy/` as the active auth service entrypoint.
+- Ensure the runtime database used in production matches the schema strategy documented here.
+
+## Current gaps
+
+- Audit/read endpoints are minimal
+- Replay protection and key lifecycle management need hardening
+- Deployment/docs should stay aligned with actual runtime DB choice

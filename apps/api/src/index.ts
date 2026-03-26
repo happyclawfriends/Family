@@ -7,6 +7,16 @@ import { serve } from '@hono/node-server';
 
 const app = new Hono();
 
+app.get('/health', async (c) => {
+  const hasGh = Boolean(process.env.GH_APP_ID && process.env.GH_APP_PRIVATE_KEY && process.env.GH_APP_INSTALLATION_ID);
+  try {
+    await db.select().from(registrationTokens).limit(1);
+    return c.json({ status: 'ok', db: 'ok', githubAppConfigured: hasGh });
+  } catch (e: any) {
+    return c.json({ status: 'degraded', db: 'error', githubAppConfigured: hasGh, error: e.message }, 503);
+  }
+});
+
 // 1. Initiate Registration: Generate OTT (One-Time Token)
 app.post('/register', async (c) => {
   const { memberId, name, platformIdentity } = await c.req.json();

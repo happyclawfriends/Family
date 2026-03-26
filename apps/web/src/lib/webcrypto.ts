@@ -1,10 +1,13 @@
-export const generateKeyPair = async () => {
-  return await window.crypto.subtle.generateKey(
-    { name: "Ed25519" },
+export const generateEd25519KeyPair = async () => {
+  const keyPair = await window.crypto.subtle.generateKey(
+    { name: 'Ed25519' },
     true,
-    ["sign", "verify"]
+    ['sign', 'verify']
   );
+  return keyPair;
 };
-export const exportPublicKey = async (key: CryptoKey) => {
-  return await window.crypto.subtle.exportKey("raw", key.publicKey);
+
+export const exportPublicKey = async (publicKey: CryptoKey) => {
+  const spki = await window.crypto.subtle.exportKey('spki', publicKey);
+  return btoa(String.fromCharCode(...new Uint8Array(spki)));
 };
