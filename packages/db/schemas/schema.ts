@@ -1,38 +1,38 @@
+import crypto from "node:crypto";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { pgTable, uuid, varchar, text, timestamp, boolean } from "drizzle-orm/pg-core";
-
-export const familyMembers = pgTable("family_members", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  type: varchar("type", { enum: ["human", "bot"] }).notNull(),
-  name: varchar("name", { length: 256 }).notNull(),
+export const familyMembers = sqliteTable("family_members", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  type: text("type", { enum: ["human", "bot"] }).notNull(),
+  name: text("name").notNull(),
   description: text("description"),
-  platformIdentity: text("platform_identity").notNull(), 
-  humanId: uuid("human_id"), 
-  status: varchar("status", { enum: ["active", "inactive"] }).default("active"),
-  registeredAt: timestamp("registered_at").defaultNow(),
+  platformIdentity: text("platform_identity").notNull(),
+  humanId: text("human_id"),
+  status: text("status", { enum: ["active", "inactive"] }).default("active"),
+  registeredAt: integer("registered_at", { mode: "timestamp_ms" }).$defaultFn(() => new Date()),
 });
 
-export const authKeys = pgTable("auth_keys", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  memberId: uuid("member_id").references(() => familyMembers.id),
-  publicKey: text("public_key").notNull(), 
-  createdAt: timestamp("created_at").defaultNow(),
+export const authKeys = sqliteTable("auth_keys", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  memberId: text("member_id").references(() => familyMembers.id),
+  publicKey: text("public_key").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).$defaultFn(() => new Date()),
 });
 
-export const githubTokens = pgTable("github_tokens", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  memberId: uuid("member_id").references(() => familyMembers.id),
-  scope: varchar("scope", { length: 256 }).notNull(),
-  tokenHash: text("token_hash").notNull(), 
-  expiresAt: timestamp("expires_at").notNull(),
-  revoked: boolean("revoked").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
+export const githubTokens = sqliteTable("github_tokens", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  memberId: text("member_id").references(() => familyMembers.id),
+  scope: text("scope").notNull(),
+  tokenHash: text("token_hash").notNull(),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+  revoked: integer("revoked", { mode: "boolean" }).default(false),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).$defaultFn(() => new Date()),
 });
 
-export const registrationTokens = pgTable("registration_tokens", {
-  token: varchar("token", { length: 256 }).primaryKey(),
-  memberId: uuid("member_id").references(() => familyMembers.id),
+export const registrationTokens = sqliteTable("registration_tokens", {
+  token: text("token").primaryKey(),
+  memberId: text("member_id").references(() => familyMembers.id),
   meta: text("meta").notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-  used: boolean("used").default(false),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+  used: integer("used", { mode: "boolean" }).default(false),
 });
