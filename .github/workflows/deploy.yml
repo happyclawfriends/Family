@@ -1,0 +1,57 @@
+name: Build and Deploy HCF API
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build monorepo
+        run: pnpm exec turbo run build --filter=api...
+
+      - name: Archive production artifacts
+        run: |
+          mkdir deploy
+          cp -r apps/api/dist deploy/
+          cp apps/api/package.json deploy/
+          # Ensure packages/db and packages/types are available if needed by dist
+          # Or better, bundle them in the build step. 
+          # Assuming currently they are external dependencies in package.json
+          tar -czf hcf-api-deploy.tar.gz -C deploy .
+
+      - name: Deploy to Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          source: "hcf-api-deploy.tar.gz"
+          target: "/home/echo/hcf-deploy-temp"
+
+      - name: Restart Service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            mkdir -p /home/echo/hcf-api/current
+            tar -xzf /home/echo/hcf-deploy-temp/hcf-api-deploy.tar.gz -C /home/echo/hcf-api/current
+            cd /home/echo/hcf-api/current
+            pnpm install --prod
+            pm2 restart hcf-api || pm2 start dist/index.js --name hcf-api
