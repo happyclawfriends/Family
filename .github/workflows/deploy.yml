@@ -26,12 +26,7 @@ jobs:
 
       - name: Archive production artifacts
         run: |
-          mkdir deploy
-          cp -r apps/api/dist deploy/
-          cp apps/api/package.json deploy/
-          # Ensure packages/db and packages/types are available if needed by dist
-          # Or better, bundle them in the build step. 
-          # Assuming currently they are external dependencies in package.json
+          pnpm --filter=@hcf/api deploy --prod deploy
           tar -czf hcf-api-deploy.tar.gz -C deploy .
 
       - name: Deploy to Server
@@ -53,9 +48,11 @@ jobs:
           port: 22
           script: |
             export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$HOME/bin:$PATH"
-            export CI=true
             mkdir -p /home/echo/hcf-api/current
             tar -xzf /home/echo/hcf-deploy-temp/hcf-api-deploy.tar.gz -C /home/echo/hcf-api/current
             cd /home/echo/hcf-api/current
-            pnpm install --prod
-            pm2 restart hcf-api || pm2 start dist/index.js --name hcf-api
+            # Ensure .env is present (backup from old path if missing)
+            if [ ! -f .env ] && [ -f /home/echo/hcf-api/apps/api/.env ]; then
+              cp /home/echo/hcf-api/apps/api/.env .env
+            fi
+            pm2 restart hcf-api || pm2 start dist/index.js --name hcf-api --node-args="--env-file=.env"
