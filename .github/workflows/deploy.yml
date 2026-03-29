@@ -51,8 +51,8 @@ jobs:
             mkdir -p /home/echo/hcf-api/current
             tar -xzf /home/echo/hcf-deploy-temp/hcf-api-deploy.tar.gz -C /home/echo/hcf-api/current
             cd /home/echo/hcf-api/current
-            # Ensure .env is present (backup from old path if missing)
             if [ ! -f .env ] && [ -f /home/echo/hcf-api/apps/api/.env ]; then
               cp /home/echo/hcf-api/apps/api/.env .env
             fi
-            pm2 restart hcf-api || pm2 start dist/index.js --name hcf-api --node-args="--env-file=.env"
+            pm2 delete hcf-api || true
+            pm2 start dist/index.js --name hcf-api --node-args="--env-file=.env"
