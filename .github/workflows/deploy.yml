@@ -35,20 +35,22 @@ jobs:
           tar -czf hcf-api-deploy.tar.gz -C deploy .
 
       - name: Deploy to Server
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
+          port: 22
           source: "hcf-api-deploy.tar.gz"
           target: "/home/echo/hcf-deploy-temp"
 
       - name: Restart Service
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
+          port: 22
           script: |
             mkdir -p /home/echo/hcf-api/current
             tar -xzf /home/echo/hcf-deploy-temp/hcf-api-deploy.tar.gz -C /home/echo/hcf-api/current
