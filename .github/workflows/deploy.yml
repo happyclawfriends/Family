@@ -22,7 +22,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build monorepo
-        run: pnpm exec turbo run build --filter=api...
+        run: pnpm exec turbo run build --filter=@hcf/api...
 
       - name: Archive production artifacts
         run: |
