@@ -54,5 +54,7 @@ jobs:
             if [ ! -f .env ] && [ -f /home/echo/hcf-api/apps/api/.env ]; then
               cp /home/echo/hcf-api/apps/api/.env .env
             fi
+            # Rebuild native modules for target server environment
+            npm rebuild better-sqlite3
             pm2 delete hcf-api || true
             pm2 start dist/index.js --name hcf-api --node-args="--env-file=.env"
