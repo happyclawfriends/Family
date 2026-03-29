@@ -52,6 +52,8 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
           script: |
+            export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$HOME/bin:$PATH"
+            export CI=true
             mkdir -p /home/echo/hcf-api/current
             tar -xzf /home/echo/hcf-deploy-temp/hcf-api-deploy.tar.gz -C /home/echo/hcf-api/current
             cd /home/echo/hcf-api/current
